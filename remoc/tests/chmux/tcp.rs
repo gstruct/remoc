@@ -4,8 +4,8 @@ use std::{net::Ipv4Addr, time::Duration};
 use tokio::{
     io::split,
     net::{TcpListener, TcpStream},
-    time::sleep,
 };
+use futures_timer::Delay;
 use tokio_util::codec::{length_delimited::LengthDelimitedCodec, FramedRead, FramedWrite};
 
 async fn tcp_server() {
@@ -84,7 +84,7 @@ async fn tcp_test() {
 
     println!("Starting server task...");
     let server_task = tokio::spawn(tcp_server());
-    sleep(Duration::from_millis(100)).await;
+    Delay::new(Duration::from_millis(100)).await;
 
     println!("String client thread...");
     let client_task = tokio::spawn(tcp_client());

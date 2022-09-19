@@ -2,7 +2,8 @@
 
 use remoc::{codec, prelude::*};
 use std::{net::Ipv4Addr, sync::Arc, time::Duration};
-use tokio::{net::TcpListener, sync::RwLock, time::sleep};
+use tokio::{net::TcpListener, sync::RwLock};
+use futures_timer::Delay;
 
 use counter::{Counter, CounterServerSharedMut, IncreaseError, TCP_PORT};
 
@@ -64,7 +65,7 @@ impl Counter for CounterObj {
                 }
 
                 // Wait the specified delay.
-                sleep(delay).await;
+                Delay::new(delay).await;
             }
         });
 

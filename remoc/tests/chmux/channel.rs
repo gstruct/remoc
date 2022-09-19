@@ -2,7 +2,7 @@ use chmux::{PortsExhausted, SendError};
 use futures::{channel::oneshot, future::try_join, stream::StreamExt};
 use remoc::chmux::{self, ReceiverStream};
 use std::time::Duration;
-use tokio::time::sleep;
+use futures_timer::Delay;
 use tracing::Instrument;
 
 use crate::loop_transport;
@@ -109,7 +109,7 @@ async fn basic() {
     }
 
     println!("Delay test...");
-    sleep(Duration::from_secs(3)).await;
+    Delay::new(Duration::from_secs(3)).await;
 
     println!("A client connecting 2...");
     let (mut tx, mut rx): (chmux::Sender, chmux::Receiver) = a_client.connect().await.unwrap();

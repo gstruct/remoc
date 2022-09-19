@@ -90,7 +90,7 @@ async fn closed() {
         println!("Client capacity: {}", client.capacity());
 
         tokio::spawn(async move {
-            tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+            futures_timer::Delay::new(std::time::Duration::from_millis(500)).await;
             drop_tx.send(()).unwrap();
         });
 

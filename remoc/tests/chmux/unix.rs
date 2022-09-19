@@ -4,8 +4,8 @@ use std::{fs, time::Duration};
 use tokio::{
     io::split,
     net::{UnixListener, UnixStream},
-    time::sleep,
 };
+use futures_timer::Delay;
 use tokio_util::codec::{length_delimited::LengthDelimitedCodec, FramedRead, FramedWrite};
 
 async fn uds_server() {
@@ -85,7 +85,7 @@ async fn uds_test() {
 
     println!("Starting server task...");
     let server_task = tokio::spawn(uds_server());
-    sleep(Duration::from_millis(100)).await;
+    Delay::new(Duration::from_millis(100)).await;
 
     println!("String client thread...");
     let client_task = tokio::spawn(uds_client());

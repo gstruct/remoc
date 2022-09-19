@@ -1,6 +1,6 @@
 use futures::StreamExt;
 use std::time::Duration;
-use tokio::time::sleep;
+use futures_timer::Delay;
 
 use crate::{droppable_loop_channel, loop_channel};
 use remoc::rch::watch::{self, ReceiverStream};
@@ -43,7 +43,7 @@ async fn simple() {
         assert_eq!(*tx.borrow(), value);
 
         if value % 10 == 0 {
-            sleep(Duration::from_millis(20)).await;
+            Delay::new(Duration::from_millis(20)).await;
         }
     }
     drop(tx);
@@ -86,7 +86,7 @@ async fn simple_stream() {
         prev_value = value;
 
         if value % 10 == 0 {
-            sleep(Duration::from_millis(20)).await;
+            Delay::new(Duration::from_millis(20)).await;
 
             println!("Modifying");
             tx.send_modify(|v| *v -= 1);

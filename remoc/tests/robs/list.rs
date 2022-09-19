@@ -4,7 +4,7 @@ use remoc::robs::{
     list::{ListEvent, ObservableList},
     RecvError,
 };
-use tokio::time::sleep;
+use futures_timer::Delay; 
 
 #[tokio::test]
 async fn standalone() {
@@ -102,7 +102,7 @@ async fn mirrored() {
         }
 
         drop(mb);
-        sleep(Duration::from_millis(100)).await;
+        Delay::new(Duration::from_millis(100)).await;
     }
 
     assert!(!obs.is_done());
@@ -162,7 +162,7 @@ async fn mirrored_disconnect_after_done() {
         }
 
         drop(mb);
-        sleep(Duration::from_millis(100)).await;
+        Delay::new(Duration::from_millis(100)).await;
     }
 
     let mb = mirror.borrow_and_update().await.unwrap();

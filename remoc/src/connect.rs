@@ -131,7 +131,7 @@ impl<TransportSinkError, TransportStreamError> From<base::ConnectError>
 /// // This would be run on the client.
 /// async fn connect_client() {
 ///     // Wait for server to be ready.
-///     tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+///     futures_timer::Delay::new(std::time::Duration::from_secs(1)).await;
 ///
 ///     // Establish TCP connection.
 ///     let socket = TcpStream::connect((Ipv4Addr::LOCALHOST, 9875)).await.unwrap();

@@ -1,6 +1,6 @@
 use bytes::Bytes;
 use futures::{
-    future, pin_mut,
+    future, pin_mut, select,
     sink::{Sink, SinkExt},
     stream::{Stream, StreamExt},
     Future, FutureExt,
@@ -22,9 +22,9 @@ use std::{
 };
 use tokio::{
     sync::{mpsc, mpsc::Permit, oneshot},
-    time::{sleep, timeout},
     try_join,
 };
+use futures_timer::Delay;
 
 use super::{
     client::{Client, ConnectRequest, ConnectResponse},
@@ -275,8 +275,11 @@ where
         // Say hello to remote endpoint and exchange configurations.
         let fut = Self::exchange_hello(&cfg, &mut transport_sink, &mut transport_stream);
         let (remote_protocol_version, remote_cfg) = match cfg.connection_timeout {
-            Some(dur) => timeout(dur, fut).await.map_err(|_| ChMuxError::Timeout)??,
-            None => fut.await?,
+            Some(dur) => select! {
+                _ = Delay::new(dur).fuse() => return Err(ChMuxError::Timeout),
+                ret = Box::pin(fut.fuse()) => ret?,
+            },
+            None => fut.fuse().await?,
         };
 
         // Create channels.
@@ -544,7 +547,7 @@ where
     ) -> Result<(), ChMuxError<TransportSinkError, TransportStreamError>> {
         async fn get_next_ping(ping_interval: Option<Duration>) {
             match ping_interval {
-                Some(interval) => sleep(interval).await,
+                Some(interval) => Delay::new(interval).await,
                 None => future::pending().await,
             }
         }
@@ -596,7 +599,7 @@ where
     ) -> Result<(), ChMuxError<TransportSinkError, TransportStreamError>> {
         async fn get_connection_timeout(connection_timeout: Option<Duration>) {
             match connection_timeout {
-                Some(timeout) => sleep(timeout).await,
+                Some(timeout) => Delay::new(timeout).await,
                 None => future::pending().await,
             }
         }

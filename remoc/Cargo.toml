@@ -25,6 +25,7 @@ rfn = ["rch"]
 robj = ["rch"]
 robs = ["rch"]
 rtc = ["rch", "remoc_macro", "async-trait"]
+wasm-bindgen = ["futures-timer/wasm-bindgen"]
 
 # Codecs
 default-codec-set = []
@@ -50,7 +51,8 @@ full-codecs = [
 remoc_macro = { version = "=0.10.0", path = "../remoc_macro", optional = true }
 
 futures = "0.3"
-tokio = { version = "1.18", features = ["macros", "rt", "sync", "time"] }
+futures-timer = "3.0.2"
+tokio = { version = "1.18", features = ["macros", "rt", "sync"] }
 tokio-util = { version = "0.7", features = ["codec"] }
 rand = "0.8"
 tracing = "0.1.29"

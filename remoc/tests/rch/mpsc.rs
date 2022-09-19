@@ -2,7 +2,7 @@ use futures::{future, StreamExt};
 use rand::Rng;
 use remoc::rch::{mpsc, ClosedReason, SendResultExt};
 use std::time::Duration;
-use tokio::time::sleep;
+use futures_timer::Delay;
 
 use crate::{droppable_loop_channel, loop_channel};
 
@@ -319,7 +319,7 @@ async fn multiple() {
 
         let dur = Duration::from_millis(rng.gen_range(0..100));
         let task = tokio::spawn(async move {
-            sleep(dur).await;
+            Delay::new(dur).await;
 
             println!("Sending {}", i);
             n_tx.send(i).await.unwrap();
